@@ -32,6 +32,13 @@ export class SherpaChatApp {
       });
     }
 
+    if (this.sendButton) {
+      this.sendButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.handleSend();
+      });
+    }
+
     if (this.textarea) {
       this.textarea.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -64,8 +71,9 @@ export class SherpaChatApp {
 
   adjustTextareaHeight() {
     if (!this.textarea) return;
-    this.textarea.style.height = 'auto';
-    this.textarea.style.height = `${this.textarea.scrollHeight}px`;
+    this.textarea.style.height = '0px';
+    const scrollHeight = this.textarea.scrollHeight;
+    this.textarea.style.height = `${Math.max(scrollHeight, 24)}px`;
     this.scrollToBottom();
   }
 
@@ -368,8 +376,14 @@ export class SherpaChatApp {
 
 // Auto-bootstrap when loaded in browser
 if (typeof window !== 'undefined') {
-  window.addEventListener('DOMContentLoaded', () => {
+  const bootstrap = () => {
     const container = document.querySelector('.chat-app-container') || document.body;
     window.sherpaApp = new SherpaChatApp({ container });
-  });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootstrap);
+  } else {
+    bootstrap();
+  }
 }
