@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Шерпа — Ассистент дистрибутора ПО</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="chat-app-container">
+    <main class="chat-window">
+      <!-- Chat Header -->
+      <header class="chat-header">
+        <div class="header-identity">
+          <div class="avatar-wrapper">
+            <div class="sherpa-avatar">Ш</div>
+            <div class="presence-badge" title="В сети"></div>
+          </div>
+          <div class="header-info">
+            <div class="header-title-row">
+              <span class="header-title">Шерпа</span>
+              <span class="header-badge">AI Ассистент</span>
+            </div>
+            <span class="header-subtitle">Консультации по каталогу ПО, лицензиям и скидкам</span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button type="button" class="fluent-button subtle" id="resetButton" title="Очистить историю диалога">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M4.5 3a.5.5 0 0 1 .5.5v2.09A7.5 7.5 0 1 1 2.5 10a.5.5 0 0 1 1 0 6.5 6.5 0 1 0 2.4-5.02L4 5h2.5a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 1 0v1.59z"/>
+            </svg>
+            <span>Очистить диалог</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Error Notification Banner -->
+      <div class="error-banner" id="errorBanner" style="display: none;">
+        <span id="errorMessage">Произошла ошибка связи</span>
+        <button type="button" class="fluent-button subtle" id="retryButton" style="padding: 2px 8px; font-size: 12px;">Повторить</button>
+      </div>
+
+      <!-- Message Feed -->
+      <section class="message-feed" id="messageFeed" aria-label="Лента сообщений">
+        <!-- Rendered dynamically by SherpaChatApp -->
+      </section>
+
+      <!-- Composer / Input Area -->
+      <footer class="chat-composer-wrap">
+        <form class="composer-form" id="composerForm">
+          <textarea 
+            class="composer-textarea" 
+            id="composerTextarea" 
+            rows="1" 
+            placeholder="Спросите о подборе СУБД, ОС, пакетах 1С, офисных решениях или скидках..."
+            aria-label="Поле ввода сообщения"
+          ></textarea>
+          <button type="submit" class="composer-send-btn" id="sendButton" disabled title="Отправить сообщение">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </form>
+        <div class="composer-footer-note">
+          <span><strong>Enter</strong> — отправить, <strong>Shift + Enter</strong> — новая строка</span>
+          <span>Sherpa Web Chat v0.1.0 (Zero-Manual Mocks)</span>
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

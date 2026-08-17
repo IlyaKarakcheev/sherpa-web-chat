@@ -1,0 +1,115 @@
+openapi: 3.1.0
+info:
+  title: Sherpa Assistant Chat API
+  version: 1.0.0
+  description: API для взаимодействия клиентского веб-интерфейса менеджера с ассистентом дистрибутора ПО «Шерпа».
+
+paths:
+  /api/v1/chat/message:
+    post:
+      summary: Отправка запроса ассистенту «Шерпа»
+      description: Принимает сообщение пользователя и возвращает структурированный ответ с Markdown-разметкой и метаданными.
+      operationId: sendMessage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatMessageRequest'
+      responses:
+        '200':
+          description: Успешный ответ ассистента
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessageResponse'
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Ошибка генерации ответа ассистентом
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ChatMessageRequest:
+      type: object
+      required:
+        - message
+      properties:
+        conversation_id:
+          type: string
+          format: uuid
+          description: Идентификатор сессии диалога
+          example: "a2b3c4d5-e6f7-48a9-b0c1-d2e3f4a5b6c7"
+        message:
+          type: string
+          description: Текст запроса менеджера
+          example: "Подбери отечественную СУБД взамен Oracle Database"
+        context:
+          type: object
+          description: Дополнительный контекст запроса
+          properties:
+            partner_inn:
+              type: string
+              example: "7701234567"
+            current_product:
+              type: string
+              example: "Oracle Enterprise Edition"
+
+    ChatMessageResponse:
+      type: object
+      required:
+        - id
+        - conversation_id
+        - text
+        - sender
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "f1e2d3c4-b5a6-4798-8091-23456789abcd"
+        conversation_id:
+          type: string
+          format: uuid
+          example: "a2b3c4d5-e6f7-48a9-b0c1-d2e3f4a5b6c7"
+        sender:
+          type: string
+          enum: [assistant, user, system]
+          example: "assistant"
+        text:
+          type: string
+          description: Форматированный текст ответа в Markdown (со списками, таблицами и ссылками на реестр)
+          example: "По вашему запросу рекомендую следующие СУБД из единого реестра отечественного ПО:\n\n| Продукт | Вендор | Совместимость с 1С |\n|---|---|---|\n| **Postgres Pro Enterprise** | Postgres Professional | Полная (сертифицирована) |\n| **Tantor** | Астра | Поддерживается |"
+        suggestions:
+          type: array
+          description: Быстрые подсказки для продолжения диалога
+          items:
+            type: string
+          example:
+            - "Рассчитать стоимость лицензий Postgres Pro"
+            - "Сравнить редакции Standard и Enterprise"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-08-17T15:30:00Z"
+
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: "LLM_SERVICE_UNAVAILABLE"
+        message:
+          type: string
+          example: "Сервис генерации временно недоступен. Пожалуйста, повторите попытку через несколько секунд."

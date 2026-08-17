@@ -1,0 +1,41 @@
+---
+description: Integrate one published component version in Cursor Component Factory
+alwaysApply: false
+---
+
+# Integration Repository Mode (Cursor Component Factory)
+
+Follow:
+- `fast-workflow/CORE_WORKFLOW.md`;
+- `fast-workflow/INTEGRATION_REPO_WORKFLOW.md`.
+
+Before editing, identify:
+- Target integration edge (`<consumer>` → `<provider>`);
+- Old and new versions (both must have verified `Ready` status);
+- Approved contract schema version (`contracts/`);
+- Integration scenario (`scenarios/` or `product/features/`);
+- Allowed paths: dependency manifest and `tests/integration/<edge>/`.
+
+## Scope & Boundaries
+
+- Modify only the integration repository / root application manifest.
+- Update exactly **one** published dependency per iteration.
+- Treat component source code as read-only.
+- Test at least one successful path (Happy Path) and one expected failure (Error Handling).
+- Record `Integrated` in the registry (`integrations/status.*`) **only after explicit human approval**.
+
+## Prohibitions
+
+- Do not edit component source code.
+- Do not update unrelated dependencies or edges in the same task.
+- Do not substitute an unpublished local build without an approved `Ready` release/tag.
+- Do not automatically patch both sides of an incompatibility.
+
+## Handling Incompatibilities & Breaking Changes
+
+On mismatch or test failure:
+1. Stop the integration iteration immediately.
+2. Do not hot-patch code in the integration repo.
+3. Report expected behavior, actual behavior, affected consumers, and the component repository that owns the fix.
+
+When recording `Integrated`, synchronously update `integrations/status.*` and `README.md` (integrated edges, component versions, environment startup, E2E test commands).

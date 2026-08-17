@@ -1,0 +1,56 @@
+---
+description: Common guardrails for component and integration repositories in Cursor Component Factory
+alwaysApply: true
+---
+
+# Cursor Component Factory Guardrails (fast-workflow)
+
+Follow `fast-workflow/CORE_WORKFLOW.md`.
+For each task, explicitly follow the 5-step Human-AI cycle:
+1. Постановка (Аналитик формулирует задачу).
+2. Документирование (`product/features/`, `COMPONENT.md`, `contracts/`) и открытые вопросы.
+3. Согласование человеком.
+4. Изолированная реализация и автотесты (с Zero-Manual Mocks).
+5. Приемка и фиксация статуса (`Ready` / `Integrated`).
+
+For each task, select exactly one mode rule:
+- `component-repo-workflow.mdc`; or
+- `integration-repo-workflow.mdc`.
+
+Before editing, establish:
+- Observable goal and current step;
+- Source-of-truth feature document, `COMPONENT.md`, and machine-readable contract schema (`contracts/`);
+- Allowed paths (component repository root or integration repository root) and forbidden paths;
+- Required checks (minimum: 1 positive scenario + 1 expected failure) and stop condition.
+
+If required context is missing or ambiguous, ask before editing. Do not invent business rules.
+
+## Scope Boundaries
+
+- Modify one repository per task.
+- Keep the diff minimal and never touch unrelated files or external repositories.
+- Stop before modifying external repositories or changing an approved contract schema.
+
+## Core Guardrails & Prohibitions
+
+- **No hallucinated business rules:** Never guess business logic or silently resolve ambiguity.
+- **Zero-Manual Mocks:** Do not write boilerplate manual mocks. Generate mocks and fixtures automatically from the contract schema (Prism, MSW, Faker+Zod, YAxUnit).
+- **SemVer Compliance:** Patch = internal fix, Minor = backward-compatible additions, Major = breaking changes requiring new contract version (e.g. `v2`).
+- **Mandatory README.md Standard:** Every repository must maintain an up-to-date `README.md` containing project purpose, current status and SemVer version, latest release changelog, step-by-step deployment and run instructions for all modes (standalone with mocks / live / production), and testing commands.
+- **No test weakening:** Never weaken tests or delete assertions to obtain a passing result.
+- **Human Approval Required:** Never mark a component `Ready` or an integration `Integrated` autonomously.
+- **Mandatory negative tests:** Never declare implementation or integration complete without testing both success and error handling.
+
+## Feedback Loops
+
+- **Bug in implementation:** Return to implementation (Step 4), add a reproducing test, fix code. Do not alter specification documents.
+- **Scope change / new requirement:** Return to documentation (Step 2), update specification and contract schema with SemVer, get human approval (Step 3), then implement (Step 4).
+
+## Process & Rule Synchronization (Doc-to-Rule Sync)
+
+Whenever workflow documents in `fast-workflow/` are updated or new process steps/tools are introduced:
+- Synchronously update corresponding Cursor rules in `.cursor/rules/` (`component-workflow.mdc`, `component-repo-workflow.mdc`, `integration-repo-workflow.mdc`).
+- Synchronously update executable skills in `.cursor/skills/` (`fast-new-component`, `fast-new-integration`, `fast-spec`, `fast-implement`, `fast-integrate`).
+- Never allow behavioral drift between documentation and Cursor AI rules/skills.
+
+After editing, run available checks and report changed files, test results, assumptions, unresolved questions, and risks.

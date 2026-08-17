@@ -1,0 +1,41 @@
+---
+description: Isolated development of one component repository in Cursor Component Factory (Polyrepo)
+alwaysApply: false
+---
+
+# Component Repository Mode (Cursor Component Factory)
+
+Follow:
+- `fast-workflow/CORE_WORKFLOW.md`;
+- `fast-workflow/COMPONENT_REPO_WORKFLOW.md`.
+
+Before editing, identify:
+- Component passport: `COMPONENT.md`;
+- Feature specification: `product/features/<feature>.md`;
+- Approved contract schema: `contracts/api/`, `contracts/events/`, or `contracts/domain/`;
+- Allowed paths: current component repository root;
+- Required checks (happy path, validation error, dependency failure, empty result).
+
+## Scope & Boundaries
+
+- Modify only the current component repository.
+- Work toward a reproducible `Ready` version.
+- Use **Zero-Manual Mocks**: automatically generate mock servers (Prism, MSW, WireMock) or fixtures (Faker+Zod, Polyfactory, YAxUnit mocks) directly from the contract schema.
+- Keep external repositories completely unchanged.
+
+## 1C:Enterprise Specifics (if applicable)
+
+- Source code must be stored in text format (1C:EDT or XML/BSL export).
+- Unit tests and mocks: `YAxUnit` (`tests/unit/`).
+- BDD scenarios: `Vanessa-Automation` (`tests/scenarios/*.feature`).
+- Build artifacts: `.cfe` or `.cf` compiled in CI and attached to Git Tag.
+
+## Stop Conditions
+
+Stop and report when:
+- An approved contract schema must change (requires human approval and SemVer update);
+- Required business behavior is ambiguous (record in Open Questions);
+- A required change belongs to another component or service;
+- An auto-mock cannot represent the published contract.
+
+Do not claim `Integrated` in this mode. When marking a version `Ready`, synchronously update `COMPONENT.md` and `README.md` (version, status, changelog of the latest release, run and test instructions). After editing, run local checks (success + failure) and report evidence, assumptions, questions, and risks.
