@@ -65,7 +65,7 @@ export class SherpaChatApp {
   adjustTextareaHeight() {
     if (!this.textarea) return;
     this.textarea.style.height = 'auto';
-    this.textarea.style.height = `${Math.min(this.textarea.scrollHeight, 120)}px`;
+    this.textarea.style.height = `${this.textarea.scrollHeight}px`;
   }
 
   updateSendButtonState() {

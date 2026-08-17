@@ -449,8 +449,7 @@ html, body {
 
 .composer-textarea {
   flex: 1;
-  min-height: 38px;
-  max-height: 120px;
+  min-height: 24px;
   resize: none;
   border: none;
   outline: none;
@@ -460,6 +459,7 @@ html, body {
   color: var(--color-neutral-foreground-1);
   background: transparent;
   padding: 8px 0;
+  overflow-y: hidden;
 }
 
 .composer-textarea::placeholder {
