@@ -1,6 +1,8 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { MockSherpaService } from '../mocks/mock-assistant.js';
+import '../src/app.js';
+
+const MockSherpaService = globalThis.MockSherpaService;
 
 describe('MockSherpaService Contract & Domain Logic', () => {
   test('Positive: should return DBMS recommendations with Markdown tables and suggestions', async () => {

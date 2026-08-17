@@ -1,6 +1,8 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { SherpaChatApp } from '../src/app.js';
+import '../src/app.js';
+
+const SherpaChatApp = globalThis.SherpaChatApp;
 
 describe('Markdown Parser in SherpaChatApp', () => {
   const app = new SherpaChatApp({

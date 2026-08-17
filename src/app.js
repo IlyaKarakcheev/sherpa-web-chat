@@ -1,10 +1,10 @@
 /**
  * Sherpa Web Chat Application
  * Pure Vanilla JS + Fluent UI v9 Design Tokens
- * Runs standalone over file:/// and http://
+ * 100% standalone over file:/// and http:// without build tools
  */
 
-export class MockSherpaService {
+class MockSherpaService {
   constructor(options = {}) {
     this.delayMs = options.delayMs ?? 400;
     this.failNext = false;
@@ -134,7 +134,7 @@ export class MockSherpaService {
   }
 }
 
-export class SherpaChatApp {
+class SherpaChatApp {
   constructor(options = {}) {
     this.service = options.service || new MockSherpaService();
     this.container = options.container || document.body;
@@ -209,7 +209,7 @@ export class SherpaChatApp {
 
   adjustTextareaHeight() {
     if (!this.textarea) return;
-    this.textarea.style.height = 'auto';
+    this.textarea.style.height = '0px';
     const scrollHeight = this.textarea.scrollHeight;
     this.textarea.style.height = `${Math.max(scrollHeight, 24)}px`;
     this.scrollToBottom();
@@ -420,6 +420,7 @@ export class SherpaChatApp {
     const lines = text.split('\n');
     let html = '';
     let inTable = false;
+    let tableHeaders = [];
     let inList = false;
 
     const flushList = () => {
@@ -433,6 +434,7 @@ export class SherpaChatApp {
       if (inTable) {
         html += '</tbody></table>';
         inTable = false;
+        tableHeaders = [];
       }
     };
 
@@ -451,6 +453,7 @@ export class SherpaChatApp {
 
         if (!inTable) {
           inTable = true;
+          tableHeaders = cells;
           html += '<table><thead><tr>';
           cells.forEach((cell) => {
             html += `<th>${this.formatInline(cell)}</th>`;
@@ -508,7 +511,7 @@ export class SherpaChatApp {
   }
 }
 
-// Auto-bootstrap when loaded in browser (both file:/// and http://)
+// Attach to global scope for browser execution (file:/// and http://)
 if (typeof window !== 'undefined') {
   window.MockSherpaService = MockSherpaService;
   window.SherpaChatApp = SherpaChatApp;
@@ -523,4 +526,10 @@ if (typeof window !== 'undefined') {
   } else {
     startApp();
   }
+}
+
+// Attach to globalThis for Node.js test runner
+if (typeof globalThis !== 'undefined') {
+  globalThis.MockSherpaService = MockSherpaService;
+  globalThis.SherpaChatApp = SherpaChatApp;
 }
