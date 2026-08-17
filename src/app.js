@@ -66,6 +66,7 @@ export class SherpaChatApp {
     if (!this.textarea) return;
     this.textarea.style.height = 'auto';
     this.textarea.style.height = `${this.textarea.scrollHeight}px`;
+    this.scrollToBottom();
   }
 
   updateSendButtonState() {
@@ -78,7 +79,7 @@ export class SherpaChatApp {
     const greeting = {
       id: 'greeting-1',
       sender: 'assistant',
-      text: `Здравствуйте! Я **Шерпа** — ваш цифровой ассистент по продуктам и лицензированию ПО.
+      text: `Здравствуйте! Я **Sherpa** — ваш цифровой ассистент по продуктам и лицензированию ПО.
 
 Я помогу:
 - Подобрать программное обеспечение из **реестра отечественного ПО** взамен зарубежных решений (Oracle, Microsoft, VMware, Red Hat).
