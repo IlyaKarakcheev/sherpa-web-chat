@@ -464,7 +464,7 @@ html, body {
   color: var(--color-neutral-foreground-1);
   background: transparent;
   padding: 4px 0;
-  overflow: hidden;
+  overflow-y: hidden;
   box-sizing: border-box;
 }
 
