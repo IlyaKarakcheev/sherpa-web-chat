@@ -191,6 +191,17 @@ class SherpaChatApp {
       this.textarea.addEventListener('focus', () => {
         this.adjustTextareaHeight();
       });
+
+      this.textarea.addEventListener('blur', () => {
+        this.adjustTextareaHeight();
+      });
+    }
+
+    // Слушатель изменения размера окна браузера (раздвигание чата)
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', () => {
+        this.adjustTextareaHeight();
+      });
     }
 
     if (this.resetButton) {
@@ -211,11 +222,55 @@ class SherpaChatApp {
 
   adjustTextareaHeight() {
     if (!this.textarea) return;
-    this.textarea.style.height = '0px';
-    const scrollHeight = this.textarea.scrollHeight;
-    const minHeight = this.textarea.value.length === 0 ? 42 : 24;
-    const newHeight = Math.max(scrollHeight, minHeight);
-    this.textarea.style.height = `${newHeight}px`;
+
+    const hasValue = this.textarea.value.trim().length > 0;
+    const isFocused = document.activeElement === this.textarea;
+
+    // Сбрасываем высоту для точного измерения scrollHeight
+    this.textarea.style.height = 'auto';
+
+    // Для placeholder при пустом вводе и без фокуса:
+    // Создаем невидимый клон для точного расчета нужной высоты текста подсказки на текущей ширине
+    let targetHeight = 24;
+
+    if (!hasValue && !isFocused && typeof document !== 'undefined') {
+      const placeholderText = this.textarea.getAttribute('placeholder') || '';
+      const dummy = document.createElement('div');
+      dummy.style.position = 'absolute';
+      dummy.style.visibility = 'hidden';
+      dummy.style.pointerEvents = 'none';
+      dummy.style.width = `${this.textarea.clientWidth || 300}px`;
+      if (typeof window !== 'undefined') {
+        dummy.style.font = window.getComputedStyle(this.textarea).font;
+      }
+      dummy.style.lineHeight = '1.45';
+      dummy.style.whiteSpace = 'normal';
+      dummy.style.wordWrap = 'break-word';
+      dummy.textContent = placeholderText;
+      document.body.appendChild(dummy);
+      const measuredPlaceholderHeight = dummy.offsetHeight;
+      dummy.remove();
+
+      if (measuredPlaceholderHeight > 28) {
+        targetHeight = measuredPlaceholderHeight + 8; // с учетом внутренних отступов
+      } else {
+        targetHeight = 24;
+      }
+    } else {
+      targetHeight = Math.max(this.textarea.scrollHeight, 24);
+    }
+
+    const isMultiline = targetHeight > 28;
+
+    if (this.composerForm) {
+      if (isMultiline) {
+        this.composerForm.classList.add('multiline');
+      } else {
+        this.composerForm.classList.remove('multiline');
+      }
+    }
+
+    this.textarea.style.height = `${targetHeight}px`;
     this.scrollToBottom();
   }
 
