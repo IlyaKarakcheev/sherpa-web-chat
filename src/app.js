@@ -213,18 +213,6 @@ class SherpaChatApp {
     const scrollHeight = this.textarea.scrollHeight;
     const newHeight = Math.max(scrollHeight, 24);
     this.textarea.style.height = `${newHeight}px`;
-
-    // Если 1 строка — центрируем с кнопкой, если несколько — выравниваем по низу
-    if (this.composerForm) {
-      if (newHeight > 28) {
-        this.composerForm.style.alignItems = 'flex-end';
-        this.textarea.style.lineHeight = '1.45';
-      } else {
-        this.composerForm.style.alignItems = 'center';
-        this.textarea.style.lineHeight = '24px';
-      }
-    }
-
     this.scrollToBottom();
   }
 
