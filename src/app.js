@@ -144,6 +144,8 @@ class SherpaChatApp {
 
     this.initElements();
     this.attachEvents();
+    this.adjustTextareaHeight();
+    this.updateSendButtonState();
     this.loadInitialGreeting();
   }
 
@@ -211,7 +213,8 @@ class SherpaChatApp {
     if (!this.textarea) return;
     this.textarea.style.height = '0px';
     const scrollHeight = this.textarea.scrollHeight;
-    const newHeight = Math.max(scrollHeight, 24);
+    const minHeight = this.textarea.value.length === 0 ? 42 : 24;
+    const newHeight = Math.max(scrollHeight, minHeight);
     this.textarea.style.height = `${newHeight}px`;
     this.scrollToBottom();
   }
