@@ -34,7 +34,8 @@ If required context is missing or ambiguous, ask before editing. Do not invent b
 ## Core Guardrails & Prohibitions
 
 - **No hallucinated business rules:** Never guess business logic or silently resolve ambiguity.
-- **Zero-Manual Mocks:** Do not write boilerplate manual mocks. Generate mocks and fixtures automatically from the contract schema (Prism, MSW, Faker+Zod, YAxUnit).
+- **Two-Tier Contracts Standard:** Separate contracts into Universal Protocol Contracts (`contracts/protocol/` or `contracts/front/`) and Domain Capability Contracts (`contracts/domain/`).
+- **Paired Mock Suite (Zero-Manual Mocks):** Domain contracts MUST be developed strictly in pair with an in-repo mock suite (`mocks/`) representing both happy-path responses and typed error triggers (`failed_parameter` for FSM rollbacks).
 - **SemVer Compliance:** Patch = internal fix, Minor = backward-compatible additions, Major = breaking changes requiring new contract version (e.g. `v2`).
 - **Mandatory README.md Standard:** Every repository must maintain an up-to-date `README.md` containing project purpose, current status and SemVer version, latest release changelog, step-by-step deployment and run instructions for all modes (standalone with mocks / live / production), and testing commands.
 - **No test weakening:** Never weaken tests or delete assertions to obtain a passing result.

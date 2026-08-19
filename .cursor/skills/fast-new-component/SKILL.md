@@ -33,9 +33,9 @@ Identify or confirm from user prompt:
 
 Create the required directories in the target component folder:
 - `product/features/`
-- `contracts/api/`, `contracts/events/`, `contracts/domain/`
+- `contracts/front/`, `contracts/protocol/`, `contracts/domain/`, `contracts/events/`
 - `src/`
-- `mocks/`
+- `mocks/` (Paired Mock Suite / Zero-Manual Mocks)
 - `tests/unit/`, `tests/integration/`
 
 ### 3. Generate Component Passport (`COMPONENT.md`)

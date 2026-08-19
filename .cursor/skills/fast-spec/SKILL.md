@@ -19,18 +19,18 @@ This skill guides the agent through Steps 1 & 2 of the `Cursor Component Factory
 - If `COMPONENT.md` does not exist, create it following the template from `fast-workflow/CORE_WORKFLOW.md`.
 - Confirm component scope within current component repository.
 
-### 2. Choose Contract Standard
-Select the appropriate machine-readable standard based on the boundary type:
-- **HTTP / REST / Webhooks:** `contracts/api/<service>-v1.yaml` (`OpenAPI 3.1`).
-- **In-Process TypeScript:** `contracts/domain/<models>.ts` (`Zod` / `TypeBox`).
-- **In-Process Python:** `contracts/domain/<models>.py` (`Pydantic v2 BaseModel`).
+### 2. Choose Two-Tier Contract Standard
+Select and generate machine-readable standards for both contract tiers:
+- **Tier 1 (Universal Protocol Contract):** `contracts/protocol/<protocol>-v1.yaml` (or `contracts/front/` for UI clients) specifying execution envelopes, capabilities manifests, and error rollback models (`failed_parameter`).
+- **Tier 2 (Domain Capability Contract):** `contracts/domain/<service>-v1.yaml` (or `.py` / `.ts`) specifying domain methods, payloads, and business validation.
 - **Async Events / Brokers:** `contracts/events/<topic>.json` (`AsyncAPI` / `JSON Schema`).
-- **1C:Enterprise:** `contracts/api/<service>.yaml` (OpenAPI) or XDTO/BSL schema.
+- **1C:Enterprise:** `contracts/protocol/` + `contracts/domain/` (OpenAPI / YAxUnit schema).
 
 ### 3. Generate Artifacts
 1. **Feature Specification:** `product/features/<feature-name>.md` (user story, input/output, positive and negative scenarios).
-2. **Contract Schema:** Create the schema in `contracts/`.
-3. **Update COMPONENT.md:** List the new feature, associated contract version, and set status to `Prototype`.
+2. **Two-Tier Contract Schemas:** Create schemas in `contracts/protocol/` and `contracts/domain/`.
+3. **Draft In-Repo Mock Suite:** Prepare skeleton for paired mock suite in `mocks/` (Zero-Manual Mocks).
+4. **Update COMPONENT.md:** List the new feature, associated contract versions, and set status to `Prototype`.
 
 ### 4. Ask Clarifying Questions
 If business constraints (limits, permissions, timeouts, error codes) are unspecified:

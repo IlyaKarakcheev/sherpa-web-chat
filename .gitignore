@@ -4,3 +4,7 @@
 *.log
 **/*.secret
 **/*.env*
+fast-workflow/
+terminals/
+agent-transcripts/
+

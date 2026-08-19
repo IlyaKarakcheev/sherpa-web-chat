@@ -16,20 +16,22 @@ This skill guides the agent through Step 4 of the `Cursor Component Factory` pro
 
 ## Workflow
 
-### 1. Zero-Manual Mocks Setup
-- For REST/HTTP: configure or spin up mock servers from OpenAPI (`Prism` / `MSW`).
-- For TS/Python: use schema-based factories.
+### 1. Two-Tier Contracts & Zero-Manual Mocks Setup
+- Verify Protocol Contract (`contracts/protocol/` or `contracts/front/`) and Domain Contract (`contracts/domain/`).
+- Implement or update the in-repo mock suite (`mocks/`) representing domain business capabilities, valid responses, and typed error responses (`failed_parameter`).
+- For REST/HTTP: configure or spin up mock servers from OpenAPI (`Prism` / `MSW` / FastAPI Mock Classes).
+- For TS/Python: use schema-based factories and Mock suites.
 - For 1C: create `YAxUnit` mock/spy definitions for external common modules.
 
 ### 2. Implement Business Logic
-- Write clean, modular implementation code in `src/` matching the approved specification.
+- Write clean, modular implementation code in `src/` (or `main.py`) matching the approved specification and contracts.
 - Ensure strict type validation on all contract boundaries.
 
 ### 3. Implement & Run Tests
 Write tests in `tests/` covering at least:
 1. **Happy Path:** Valid input produces expected output matching contract.
 2. **Invalid Input (400 / Validation Error):** Missing/invalid fields rejected cleanly.
-3. **Dependency Failure (500 / Timeout):** Upstream errors handled safely without crash.
+3. **Dependency Failure & Rollback:** Upstream errors handled safely with FSM context rollback on `failed_parameter`.
 4. **Empty Result (404 / Empty List):** No records found scenario.
 5. **1C BDD (if 1C):** `Vanessa-Automation` `.feature` files in `tests/scenarios/`.
 

@@ -12,15 +12,16 @@ Follow:
 Before editing, identify:
 - Component passport: `COMPONENT.md`;
 - Feature specification: `product/features/<feature>.md`;
-- Approved contract schema: `contracts/api/`, `contracts/events/`, or `contracts/domain/`;
+- Approved two-tier contracts: Protocol Contract (`contracts/protocol/` or `contracts/front/`) and Domain Capability Contract (`contracts/domain/`);
+- Paired in-repo mock suite (`mocks/`);
 - Allowed paths: current component repository root;
-- Required checks (happy path, validation error, dependency failure, empty result).
+- Required checks (happy path, validation error, dependency failure, rollback on failed parameter, empty result).
 
 ## Scope & Boundaries
 
 - Modify only the current component repository.
 - Work toward a reproducible `Ready` version.
-- Use **Zero-Manual Mocks**: automatically generate mock servers (Prism, MSW, WireMock) or fixtures (Faker+Zod, Polyfactory, YAxUnit mocks) directly from the contract schema.
+- Use **Two-Tier Contracts & Zero-Manual Mocks**: develop domain contracts strictly in pair with an in-repo mock suite (`mocks/`), providing auto-generated mock servers (Prism, MSW, WireMock) or fixtures (Faker+Zod, Polyfactory, FastAPI/Pydantic mock classes, YAxUnit mocks) directly from the contract schema.
 - Keep external repositories completely unchanged.
 
 ## 1C:Enterprise Specifics (if applicable)

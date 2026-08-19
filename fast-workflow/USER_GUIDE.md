@@ -27,8 +27,8 @@
 /new-component billing-service Путь: d:\__ai-factory\projects\billing-service Назначение: расчет персональных скидок и промокодов. Стек: REST OpenAPI
 ```
 *Что сделает ИИ:*
-- Создаст изолированную структуру `product/features/`, `contracts/api/`, `src/`, `mocks/`, `tests/unit/`, `tests/integration/`.
-- Создаст паспорт `COMPONENT.md` (статус `Prototype`), стартовый `README.md` с инструкциями и черновик схемы контракта.
+- Создаст двухуровневую контрактную структуру `product/features/`, `contracts/protocol/`, `contracts/domain/`, `contracts/front/`, `src/`, `mocks/`, `tests/`.
+- Создаст паспорт `COMPONENT.md` (статус `Prototype`), стартовый `README.md` с инструкциями и черновики контрактов с парным мок-пакетом.
 - Скопирует правила `.cursor/` и документацию `fast-workflow/`.
 - Инициализирует собственный независимый Git-репозиторий (`git init -b main`) и сделает первый коммит.
 

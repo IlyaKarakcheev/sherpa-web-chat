@@ -1,0 +1,56 @@
+openapi: 3.1.0
+info:
+  title: Distributor Sales Workflow & Assistant FSM Domain Contract
+  version: 1.0.0
+  description: Доменный контракт шагов диалога ассистента продаж дистрибутора ПО и связывания сделок в 1С CRM.
+
+components:
+  schemas:
+    WorkflowStep:
+      type: object
+      required:
+        - step_id
+        - name
+        - required_directives
+      properties:
+        step_id:
+          type: integer
+          enum: [1, 2, 3, 4, 5]
+          example: 1
+        name:
+          type: string
+          example: "Greeting & Initial State"
+        description:
+          type: string
+        available_commands:
+          type: array
+          items:
+            type: string
+          example:
+            - "Обработать открытое письмо"
+            - "Показать сделки 1С"
+            - "Подобрать отечественное ПО"
+        required_directives:
+          type: array
+          items:
+            type: string
+          example: ["placeholder"]
+
+    SalesStepsCatalog:
+      type: object
+      properties:
+        step_1_greeting:
+          $ref: '#/components/schemas/WorkflowStep'
+          description: "Шаг 1: Приветствие, отображение подключенных сервисов и стартовых действий"
+        step_2_email_analysis:
+          $ref: '#/components/schemas/WorkflowStep'
+          description: "Шаг 2: Извлечение фактов из письма (GliNER NER) и вывод найденных сделок 1С (:::facts, :::deal-card)"
+        step_3_deal_linking:
+          $ref: '#/components/schemas/WorkflowStep'
+          description: "Шаг 3: Связывание со сделкой 1С CRM и предложение расчета спецификации"
+        step_4_spec_calculation:
+          $ref: '#/components/schemas/WorkflowStep'
+          description: "Шаг 4: Расчет спецификации и выбор суммы сделки"
+        step_5_deal_created:
+          $ref: '#/components/schemas/WorkflowStep'
+          description: "Шаг 5: Фиксация сделки и завершение сценария"
