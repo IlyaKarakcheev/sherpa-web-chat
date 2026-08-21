@@ -1,0 +1,390 @@
+openapi: 3.1.0
+info:
+  title: Sherpa Thin Chat Protocol API (Front <-> Orchestrator)
+  version: 1.0.0
+  description: >-
+    Универсальный контракт протокола тонкого чата между фронтендом (React / Fluent UI v9)
+    и серверным оркестратором (LangGraph FSM StateGraph).
+paths:
+  /health:
+    get:
+      summary: Проверка работоспособности бэкенда
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Сервер готов к работе
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /v1/chat/session:
+    post:
+      summary: Инициализация сессии обработки письма из Outlook (Zero-Click)
+      operationId: initSession
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitSessionRequest'
+      responses:
+        '200':
+          description: Сессия успешно создана или восстановлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InitSessionResponse'
+        '409':
+          description: Письмо уже связано со сделкой другим пользователем
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProtocolErrorEnvelope'
+        '400':
+          description: Ошибка валидации параметров письма
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProtocolErrorEnvelope'
+
+  /v1/chat/session/upload:
+    post:
+      summary: Инициализация сессии через загрузку файла письма (.msg / .eml)
+      operationId: initSessionUpload
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - manager_email
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Бинарный файл письма (.msg / .eml)
+                manager_email:
+                  type: string
+                  format: email
+                  example: "manager@corp.local"
+      responses:
+        '200':
+          description: Файл разобран и сессия инициализирована
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InitSessionResponse'
+        '400':
+          description: Ошибка разбора файла письма
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProtocolErrorEnvelope'
+
+  /v1/chat/message:
+    post:
+      summary: Отправка сообщения, ответа на реплай или клика по кнопке
+      operationId: sendMessage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatMessageRequest'
+      responses:
+        '200':
+          description: Сообщение обработано FSM/LLM узлом
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatMessageResponse'
+        '400':
+          description: Ошибка сессии или недопустимое действие
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProtocolErrorEnvelope'
+
+  /v1/chat/stream:
+    get:
+      summary: SSE-поток событий исполнения шагов FSM и генерации сообщений
+      operationId: streamSessionEvents
+      parameters:
+        - name: session_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Идентификатор сессии
+      responses:
+        '200':
+          description: Поток событий text/event-stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          example: "ok"
+        version:
+          type: string
+          example: "0.1.0"
+        mock_mode:
+          type: boolean
+          example: true
+
+    InitSessionRequest:
+      type: object
+      required:
+        - subject
+        - sender
+        - body
+        - manager_email
+      properties:
+        subject:
+          type: string
+          example: "Re: Запрос на поставку серверного оборудования по сделке 105-К"
+        sender:
+          type: string
+          format: email
+          example: "client@partner.ru"
+        body:
+          type: string
+          example: "Добрый день! Направляем уточнения по спецификации для ООО 'Ромашка'. Сумма 500 000 руб."
+        manager_email:
+          type: string
+          format: email
+          example: "manager@corp.local"
+
+    ExtractedSummary:
+      type: object
+      properties:
+        companies:
+          type: array
+          items:
+            type: string
+          example: ["ООО Ромашка"]
+        deal_numbers:
+          type: array
+          items:
+            type: string
+          example: ["105-К"]
+        inn:
+          type: array
+          items:
+            type: string
+          example: ["7701234567"]
+        amount:
+          type: string
+          nullable: true
+          example: "500 000 руб"
+
+    MessageMetadata:
+      type: object
+      properties:
+        extracted_summary:
+          $ref: '#/components/schemas/ExtractedSummary'
+        expected_input:
+          type: string
+          nullable: true
+          example: "partner_search"
+        reference_link:
+          type: string
+          nullable: true
+          example: "e1cib/data/Документ.Сделка?ref=deal-001-guid"
+
+    MessageItem:
+      type: object
+      required:
+        - id
+        - role
+        - content
+      properties:
+        id:
+          type: string
+          example: "msg-001"
+        role:
+          type: string
+          enum: ["user", "assistant", "system"]
+          example: "assistant"
+        content:
+          type: string
+          description: Текст сообщения в формате Markdown GFM
+          example: "Я проанализировал письмо и нашел подходящие сделки в 1С:"
+        metadata:
+          $ref: '#/components/schemas/MessageMetadata'
+
+    StepItem:
+      type: object
+      required:
+        - step_id
+        - node_name
+        - title
+        - status
+      properties:
+        step_id:
+          type: string
+          example: "step_1"
+        node_name:
+          type: string
+          example: "extract_entities"
+        title:
+          type: string
+          example: "Обрабатываю письмо..."
+        status:
+          type: string
+          enum: ["running", "completed", "failed"]
+          example: "completed"
+        output:
+          type: object
+          nullable: true
+
+    InitSessionResponse:
+      type: object
+      required:
+        - session_id
+        - status
+        - is_new_session
+        - messages
+        - steps
+        - suggestions
+      properties:
+        session_id:
+          type: string
+          example: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        status:
+          type: string
+          enum: ["running", "paused", "completed", "failed"]
+          example: "completed"
+        is_new_session:
+          type: boolean
+          example: true
+        existing_link:
+          type: object
+          nullable: true
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageItem'
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/StepItem'
+        suggestions:
+          type: array
+          items:
+            type: string
+          example:
+            - "1. ⭐ 105-К Поставка серверов"
+            - "2. 106-К Лицензии ПО"
+            - "3. + Создать сделку"
+            - "4. 🔍 Искать вручную"
+
+    ChatMessageRequest:
+      type: object
+      required:
+        - session_id
+        - text
+        - manager_email
+      properties:
+        session_id:
+          type: string
+          example: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        text:
+          type: string
+          example: "1"
+        reply_to_message_id:
+          type: string
+          nullable: true
+          example: "msg-clarify-partner"
+        manager_email:
+          type: string
+          format: email
+          example: "manager@corp.local"
+
+    ChatMessageResponse:
+      type: object
+      required:
+        - session_id
+        - status
+        - current_stage
+        - messages
+        - steps
+        - suggestions
+      properties:
+        session_id:
+          type: string
+          example: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        status:
+          type: string
+          enum: ["running", "paused", "completed", "failed"]
+          example: "completed"
+        current_stage:
+          type: string
+          example: "DEAL_LINKED"
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageItem'
+        steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/StepItem'
+        suggestions:
+          type: array
+          items:
+            type: string
+          example: []
+        final_output:
+          type: string
+          nullable: true
+          example: "Связал письмо со сделкой: Поставка серверного оборудования (105-К)"
+
+    ErrorDetail:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: "ALREADY_PROCESSED"
+        message:
+          type: string
+          example: "Письмо уже связано со сделкой 'Поставка оборудования' (105-К) пользователем manager@corp.local."
+        failed_parameter:
+          type: string
+          nullable: true
+          example: "session_id"
+        suggested_recovery:
+          type: string
+          nullable: true
+          example: "Используйте ссылку e1cib/data/Документ.Сделка?ref=deal-001 для перехода в 1С."
+
+    ProtocolErrorEnvelope:
+      type: object
+      required:
+        - status
+        - error
+      properties:
+        status:
+          type: string
+          enum: ["error"]
+          example: "error"
+        session_id:
+          type: string
+          nullable: true
+          example: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
