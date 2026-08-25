@@ -7,28 +7,37 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Node modules & build
 node_modules
 dist
 dist-ssr
+*.tsbuildinfo
 *.local
 
-# Editor directories and files
+# Editor & OS
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
+Thumbs.db
+desktop.ini
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# Environment variables
+# Office Add-in debug certs (used by Vite HTTPS)
+certs/
+.office-addin-dev-certs/
+
+# Environment & secrets
 .env
-.env.production
 .env.local
 .env.*.local
+!.env.example
+*.secret
 
-# Test & Coverage
+# Test & coverage
 coverage/
 .nyc_output/

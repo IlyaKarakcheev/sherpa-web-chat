@@ -70,8 +70,8 @@ export const App: React.FC = () => {
 
   const isMockMode =
     typeof import.meta !== 'undefined' && import.meta.env
-      ? import.meta.env.MODE === 'mock' || import.meta.env.VITE_MOCK_MODE === 'true' || true
-      : true;
+      ? import.meta.env.MODE === 'mock' || import.meta.env.VITE_MOCK_MODE === 'true'
+      : false;
 
   const mockService = useMemo(() => {
     return new MockChatService({
@@ -103,11 +103,11 @@ export const App: React.FC = () => {
           <ChatPanel
             key={`chat-panel-${reloadKey}`}
             chatService={chatService}
-            enableSSEStream={!isCollisionMode && !isValidationErrMode && !isNetworkErrMode}
+            enableSSEStream={!isMockMode || (!isCollisionMode && !isValidationErrMode && !isNetworkErrMode)}
           />
         </div>
 
-        {/* Dev Mode Simulation Workbench */}
+        {isMockMode && (
         <div className={styles.devToolbar}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span className={styles.devTitle}>🛠 Панель сценариев (Zero-Manual Mocks)</span>
@@ -163,6 +163,7 @@ export const App: React.FC = () => {
             </ul>
           </div>
         </div>
+        )}
       </div>
     </FluentProvider>
   );

@@ -36,15 +36,18 @@ npm install
 ```bash
 npm run dev:mock
 ```
-Приложение откроется по адресу: `http://localhost:3000`.
+Приложение откроется по адресу: `https://localhost:3011`.
+HTTPS использует тот же локальный сертификат `office-addin-dev-certs`, что и `sherpa-outlook-plugin`.
 
 ---
 
 ### 3. Запуск в рабочем/live режиме
-Подключение к реальному серверу `sherpa-agent-server` (по умолчанию `http://localhost:8000`):
+Подключение к реальному серверу `sherpa-agent-server` (по умолчанию `http://localhost:3012`):
 ```bash
 npm run dev
 ```
+Приложение откроется по адресу: `https://localhost:3011`.
+HTTPS использует тот же локальный сертификат `office-addin-dev-certs`, что и `sherpa-outlook-plugin`.
 
 ---
 

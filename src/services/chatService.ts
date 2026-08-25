@@ -137,6 +137,6 @@ export function createChatService(isMock: boolean = true, mockOptions = {}): ICh
   const apiUrl =
     typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL
       ? import.meta.env.VITE_API_URL
-      : 'http://localhost:8000';
+      : 'http://localhost:3012';
   return new HttpChatService(apiUrl);
 }
